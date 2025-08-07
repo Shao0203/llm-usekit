@@ -3,6 +3,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# user ignore file
+.DS_Store
+config.py
+
 # C extensions
 *.so
 
