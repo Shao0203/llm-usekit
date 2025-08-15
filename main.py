@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import generate_script
+from utils import Generator
 
 # multi-languages dictionary
 TEXTS = {
@@ -84,9 +84,9 @@ if submit and not subject:
 # generate script
 if submit:
     with st.spinner(t['loading']):
-        wiki_search, title, script = generate_script(
-            subject, video_length, creativity, api_key, model_provider, lang
-        )
+        generator = Generator(api_key, model_provider, creativity)
+        wiki_search, title, script = generator.generate_script(
+            subject, video_length, lang)
     st.success(t['success'])
 
     st.subheader(t['title_label'])
