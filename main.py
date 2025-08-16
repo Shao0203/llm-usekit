@@ -40,6 +40,11 @@ video_length = st.number_input(
 creativity = st.slider(t['creativity'], min_value=0.0,
                        max_value=1.0, step=0.1, value=0.3)
 
+reference_prompt = ''
+uploaded_file = st.file_uploader(t['upload_file'], type=['txt'])
+if uploaded_file:
+    reference_prompt = uploaded_file.read().decode()
+
 # disable button until all fields are valid
 submit = st.button(
     t['create_script'],
@@ -63,7 +68,7 @@ if submit:
     with st.spinner(t['loading']):
         generator = Generator(api_key, model_provider, creativity)
         wiki_search, title, script = generator.generate_script(
-            subject, video_length, lang)
+            subject, video_length, lang, reference_prompt)
     # add history and config into session_state
     if 'history' not in st.session_state:
         st.session_state.history = []

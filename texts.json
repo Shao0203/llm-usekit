@@ -20,7 +20,8 @@
         "wiki_label": "维基百科相关信息 👀",
         "error": "发生错误",
         "remember": "保存配置",
-        "gen_history": "📚 生成记录"
+        "gen_history": "📚 生成记录",
+        "upload_file": "上传参考文档（可选）"
     },
     "English": {
         "title": "🎬 Video Script Generator",
@@ -43,6 +44,7 @@
         "wiki_label": "Wikipedia Related Info 👀",
         "error": "Something went wrong",
         "remember": "keep settings",
-        "gen_history": "📚 History"
+        "gen_history": "📚 History",
+        "upload_file": "Upload reference documents (optional)"
     }
 }

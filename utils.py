@@ -3,6 +3,7 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.utilities import WikipediaAPIWrapper
+from typing import Tuple, Literal
 
 __all__ = ['Generator']  # Expose only one interface - Generator
 
@@ -17,7 +18,8 @@ class Generator:
         self._creativity = creativity
         self._llm = self._get_llm()
 
-    def generate_script(self, subject, video_length, lang):
+    def generate_script(self, subject: str, video_length: float,
+                        lang: Literal['中文', 'English'], reference_prompt: str) -> Tuple[str, str, str]:
         """
         Generate a video script based on the given parameters.
         This is the ONLY public method for external calls.
@@ -37,7 +39,7 @@ class Generator:
         wiki = self._get_wikipedia(subject, lang)
         title = self._generate_title(title_template, subject, lang)
         script = self._generate_content(
-            script_template, lang, title, video_length, wiki)
+            script_template, lang, title, video_length, wiki, reference_prompt)
         return wiki, title, script
 
     # ------------------- private methods below -------------------
@@ -67,7 +69,8 @@ class Generator:
             要求开头抓住眼球，中间提供干货内容，结尾有惊喜。整体内容的表达方式要尽量轻松有趣，吸引年轻人。
             脚本格式按照【开头】【中间】【结尾】分隔; 若英文回答请用【Opening】【Body】【Ending】分隔。
             脚本内容可以结合以下维基百科搜索出的信息，但仅作为参考，只结合相关内容即可，不相关的忽略：
-            ```{wikipedia_search}```""")
+            ```{wikipedia_search}```并且，如果用户上传了相关信息，也可作为参考。如无信息请忽略：
+            ```{reference_prompt}```""")
         ])
         return title_template, script_template
 
@@ -82,7 +85,7 @@ class Generator:
         title_chain = title_template | self._llm
         return title_chain.invoke({'subject': subject, 'lang': lang}).content
 
-    def _generate_content(self, script_template, lang, title, video_length, wiki):
+    def _generate_content(self, script_template, lang, title, video_length, wiki, reference_prompt):
         """Private: Generate script content."""
         script_chain = script_template | self._llm
         return script_chain.invoke({
@@ -90,4 +93,5 @@ class Generator:
             'title': title,
             'duration': video_length,
             'wikipedia_search': wiki,
+            'reference_prompt': reference_prompt
         }).content
