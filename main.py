@@ -4,8 +4,7 @@ from datetime import datetime
 import json
 
 # Initialize history in session_state
-if 'history' not in st.session_state:
-    st.session_state.history = []
+
 # multi-languages dictionary
 with open('texts.json', 'r') as f:
     TEXTS = json.load(f)
@@ -27,8 +26,9 @@ with st.sidebar:
     st.markdown(t['get_kimi_key'])
 
     st.subheader(t['gen_history'])
-    for idx, item in enumerate(st.session_state.history[::-1][:5]):
-        st.caption(f"{idx+1}: {item['subject']} - {item['title']}")
+    if 'history' in st.session_state:
+        for idx, item in enumerate(st.session_state.history[::-1][:5]):
+            st.caption(f"{idx+1}: {item['subject']} - {item['title']}")
 
 # page title
 st.title(t['title'])
@@ -65,6 +65,8 @@ if submit:
         wiki_search, title, script = generator.generate_script(
             subject, video_length, lang)
     # add history and config into session_state
+    if 'history' not in st.session_state:
+        st.session_state.history = []
     st.session_state.history.append({
         'subject': subject,
         'title': title,
@@ -87,4 +89,4 @@ if submit:
     with st.expander(t['wiki_label']):
         st.info(wiki_search)
 
-print(st.session_state)
+# print(st.session_state)
