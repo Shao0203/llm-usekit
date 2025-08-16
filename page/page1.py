@@ -4,7 +4,7 @@ import pandas as pd
 
 st.write('## *Hello world* !!!')
 
-st.image('./Rabbit.jpeg', width=200)
+st.image('./pages/Rabbit.jpeg', width=200)
 
 ['apple', 'pear', 'orange']
 
