@@ -4,6 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.utilities import WikipediaAPIWrapper
 from typing import Tuple, Literal
+from functools import lru_cache
 
 __all__ = ['Generator']  # Expose only one interface - Generator
 
@@ -74,6 +75,7 @@ class Generator:
         ])
         return title_template, script_template
 
+    @lru_cache(maxsize=5)  # cache most recent records
     def _get_wikipedia(self, subject, lang):
         """Private: Get subject relevant info from Wikipedia."""
         lang_code = 'en' if lang == 'English' else 'zh'

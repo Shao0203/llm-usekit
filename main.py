@@ -6,7 +6,7 @@ import json
 # Initialize history in session_state
 
 # multi-languages dictionary
-with open('texts.json', 'r') as f:
+with open('texts.json', 'r', encoding='utf-8') as f:
     TEXTS = json.load(f)
 
 # sidebar
