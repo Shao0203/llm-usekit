@@ -5,6 +5,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.utilities import WikipediaAPIWrapper
 from typing import Tuple, Literal
 from functools import lru_cache
+import json
 
 __all__ = ['Generator']  # Expose only one interface - Generator
 
@@ -13,14 +14,14 @@ class Generator:
     """A generator uses LLM to create video script"""
 
     def __init__(self, api_key, model_provider, creativity):
-        """All attributes are private and only used for initialization"""
+        """All attributes are private and only used for llm initialization"""
         self._api_key = api_key
         self._model_provider = model_provider
         self._creativity = creativity
         self._llm = self._get_llm()
 
     def generate_script(self, subject: str, video_length: float,
-                        lang: Literal['中文', 'English'], reference_prompt: str) -> Tuple[str, str, str]:
+                        lang: Literal['Chinese', 'English'], reference_prompt: str) -> Tuple[str, str, str]:
         """
         Generate a video script based on the given parameters.
         This is the ONLY public method for external calls.
@@ -29,6 +30,7 @@ class Generator:
             subject (str): The video subject or topic.
             video_length (float): The video length in minutes.
             lang (str): Language to use. Options: 'Chinese', 'English'.
+            reference_prompt (str): contents of file if user uploads one.
 
         Returns:
             tuple: A tuple containing:
@@ -36,7 +38,7 @@ class Generator:
             - title (str): Generated video title.
             - script (str): Generated video script.
         """
-        title_template, script_template = self._get_prompts_template()
+        title_template, script_template = self._get_prompts_template(lang)
         wiki = self._get_wikipedia(subject, lang)
         title = self._generate_title(title_template, subject, lang)
         script = self._generate_content(
@@ -52,30 +54,25 @@ class Generator:
             'DeepSeek': {'model': 'deepseek-chat', 'base_url': 'https://api.deepseek.com/v1'},
         }
         return ChatOpenAI(
-            api_key=self._api_key,
             base_url=model_options[self._model_provider]['base_url'],
             model=model_options[self._model_provider]['model'],
+            api_key=self._api_key,
             temperature=self._creativity
         )
 
-    def _get_prompts_template(self):
+    def _get_prompts_template(self, lang):
         """Private: Get prompts template for video title and script."""
+        with open('texts.json', 'r', encoding='utf-8') as f:
+            TEXTS = json.load(f)
         title_template = ChatPromptTemplate([
-            ('human', '请为"{subject}"这个主题的视频想一个吸引人的标题，回答使用{lang}')
+            ("human", f"""{TEXTS[lang]['prompt_title_str']}""")
         ])
         script_template = ChatPromptTemplate([
-            ("human",
-             """你是一位短视频博主。根据以下标题和相关信息，写一个视频脚本，回答使用语种{lang}。
-            视频标题：{title}，视频时长：{duration}分钟，生成的脚本的长度尽量遵循视频时长的要求。
-            要求开头抓住眼球，中间提供干货内容，结尾有惊喜。整体内容的表达方式要尽量轻松有趣，吸引年轻人。
-            脚本格式按照【开头】【中间】【结尾】分隔; 若英文回答请用【Opening】【Body】【Ending】分隔。
-            脚本内容可以结合以下维基百科搜索出的信息，但仅作为参考，只结合相关内容即可，不相关的忽略：
-            ```{wikipedia_search}```并且，如果用户上传了相关信息，也可作为参考。如无信息请忽略：
-            ```{reference_prompt}```""")
+            ("human", f"""{TEXTS[lang]['prompt_script_str']}""")
         ])
         return title_template, script_template
 
-    @lru_cache(maxsize=5)  # cache most recent records
+    @lru_cache(maxsize=5)  # cache recent wiki search records
     def _get_wikipedia(self, subject, lang):
         """Private: Get subject relevant info from Wikipedia."""
         lang_code = 'en' if lang == 'English' else 'zh'

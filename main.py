@@ -3,8 +3,6 @@ from utils import Generator
 from datetime import datetime
 import json
 
-# Initialize history in session_state
-
 # multi-languages dictionary
 with open('texts.json', 'r', encoding='utf-8') as f:
     TEXTS = json.load(f)
@@ -12,7 +10,7 @@ with open('texts.json', 'r', encoding='utf-8') as f:
 # sidebar
 with st.sidebar:
     lang = st.radio(label='Languages', options=[
-                    '中文', 'English'], label_visibility='hidden')
+                    'Chinese', 'English'], label_visibility='hidden')
     t = TEXTS[lang]  # define current language dictionary
 
     model_provider = st.selectbox(
