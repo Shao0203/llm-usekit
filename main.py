@@ -9,8 +9,7 @@ with open('texts.json', 'r', encoding='utf-8') as f:
 
 # sidebar
 with st.sidebar:
-    lang = st.radio(label='Languages', options=[
-                    'Chinese', 'English'], label_visibility='hidden')
+    lang = st.radio(label='选择语言', options=['Chinese', 'English'])
     t = TEXTS[lang]  # define current language dictionary
 
     model_provider = st.selectbox(
