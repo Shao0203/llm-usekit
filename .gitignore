@@ -7,6 +7,7 @@ __pycache__/
 .DS_Store
 config.py
 backup.py
+draft.py
 
 # C extensions
 *.so
