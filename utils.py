@@ -122,7 +122,7 @@ class Generator:
         except Exception as e:
             self._log_warning(
                 f'Title generation failed (subject={subject}, lang={lang}): {e}')
-            return '[Error: Title missing]'
+            return '[Error: Title generation failed]'
         return title
 
     def _generate_content(self, script_template, lang, title, video_length, wiki, reference_prompt):
