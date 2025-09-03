@@ -8,6 +8,7 @@ __pycache__/
 config.py
 backup.py
 draft.py
+demo.py
 
 # C extensions
 *.so
