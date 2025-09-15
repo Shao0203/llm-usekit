@@ -1,0 +1,9 @@
+Greeting:
+
+Hello World!
+
+Bright
+
+----------
+
+你好啊，地球人！
