@@ -28,16 +28,19 @@ if prompt_text:
 
     # 流式输出
     with st.chat_message('ai'):
-        response = st.write_stream(
-            get_chat_response_stream(prompt_text, st.session_state.session_id)
-        )
-    # 最终完整的内容保存下来（流式时 response 是拼接后的最终字符串）
-    st.session_state.messages.append({'role': 'ai', 'content': response})
+        placeholder = st.empty()  # 占位符
+        placeholder.markdown("🤔 AI is thinking...")  # 初始提示
 
+        response_text = ""  # 累积AI的回复
+        for chunk in get_chat_response_stream(prompt_text, st.session_state.session_id):
+            response_text += chunk
+            placeholder.markdown(response_text)  # 动态替换内容
+
+    # 最终完整的内容保存下来
+    st.session_state.messages.append({'role': 'ai', 'content': response_text})
+
+    # 一次性等待完整回复
     # with st.spinner('AI is thinking...'):
     #     response = get_chat_response(prompt_text, st.session_state.session_id)
     # st.session_state.messages.append({'role': 'ai', 'content': response})
     # st.chat_message('ai').write(response)
-
-
-# print('#####', st.session_state)
