@@ -7,6 +7,7 @@ from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_huggingface import HuggingFaceEmbeddings
 import os
+import tempfile
 
 # 禁止 Hugging Face 的 tokenizers 库并行 warning
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
@@ -24,14 +25,24 @@ def _get_session_history(session_id: str) -> InMemoryChatMessageHistory:
     return _store[session_id]
 
 
-def _init_vectorstore(pdf_path: str):
+def _init_vectorstore(uploaded_file):
     """初始化向量数据库（只执行一次）"""
     global _vectorstore, _retriever
     if _vectorstore is not None and _retriever is not None:
         return _vectorstore, _retriever
 
-    # 1. 加载 PDF
-    text_loader = PyPDFLoader(pdf_path)
+    # 1. 加载用户上传的文件内容
+    # 临时保存文件
+    tmp_path = 'temp.pdf'
+    with open(tmp_path, 'wb') as tmp_file:
+        tmp_file.write(uploaded_file.read())
+
+    # with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
+    #     tmp_file.write(uploaded_file.read())    # 把二进制内容写入临时文件
+    #     tmp_path = tmp_file.name
+
+    # 加载 PDF
+    text_loader = PyPDFLoader(tmp_path)
     docs = text_loader.load()
 
     # 2. 分割文本
@@ -53,11 +64,11 @@ def _init_vectorstore(pdf_path: str):
     return _vectorstore, _retriever
 
 
-def get_rag_response(question: str, session_id: str = 'user1', pdf_path: str = "thesis.pdf") -> str:
+def get_rag_response(question: str, uploaded_file, session_id: str = 'user1') -> str:
     """基于 PDF 文档 + RAG 的对话问答，支持多轮聊天记忆"""
 
     # 初始化向量数据库（只在第一次调用时执行）
-    _, retriever = _init_vectorstore(pdf_path)
+    _, retriever = _init_vectorstore(uploaded_file)
 
     # 初始化 LLM
     llm = ChatOpenAI(
@@ -98,6 +109,6 @@ def get_rag_response(question: str, session_id: str = 'user1', pdf_path: str = "
 
 
 # ======= 测试 =======
-if __name__ == "__main__":
-    print("#####: ", get_rag_response("Transformer的论文标题是什么?"))
-    print("@@@@@: ", get_rag_response("Transformer的论文链接是什么?"))
+# if __name__ == "__main__":
+    # print("#####: ", get_rag_response("Transformer的论文标题是什么?"))
+    # print("@@@@@: ", get_rag_response("Transformer的论文链接是什么?"))
