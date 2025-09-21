@@ -1,7 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
 from langchain_community.vectorstores import FAISS
 from langchain_core.runnables import RunnableWithMessageHistory
 from langchain_core.chat_history import InMemoryChatMessageHistory
@@ -15,6 +15,7 @@ os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 # ========== 全局缓存，避免重复加载 ==========
 _vectorstore = None
 _retriever = None
+_file_name = None
 _store = {}  # 存 session -> chat history
 
 
@@ -26,23 +27,32 @@ def _get_session_history(session_id: str) -> InMemoryChatMessageHistory:
 
 
 def _init_vectorstore(uploaded_file):
-    """初始化向量数据库（只执行一次）"""
-    global _vectorstore, _retriever
-    if _vectorstore is not None and _retriever is not None:
+    """初始化向量数据库（只执行一次，除非新上传文件）"""
+    global _vectorstore, _retriever, _file_name
+    if _vectorstore is not None and _retriever is not None and _file_name == uploaded_file.name:
         return _vectorstore, _retriever
 
     # 1. 加载用户上传的文件内容
-    # 临时保存文件
-    tmp_path = 'temp.pdf'
-    with open(tmp_path, 'wb') as tmp_file:
-        tmp_file.write(uploaded_file.read())
+    # 临时保存文件, 比较上传文件名 如果两次都一样 就不初始化，如果上传新文件，就初始化。
+    # tmp_path = f'temp{file_ext}'
+    # with open(tmp_path, 'wb') as tmp_file:
+    #     tmp_file.write(uploaded_file.read())
+    _file_name = uploaded_file.name
+    file_ext = os.path.splitext(_file_name)[1].lower()
 
-    # with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as tmp_file:
-    #     tmp_file.write(uploaded_file.read())    # 把二进制内容写入临时文件
-    #     tmp_path = tmp_file.name
+    with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp_file:
+        tmp_file.write(uploaded_file.read())    # 把二进制内容写入临时文件
+        tmp_path = tmp_file.name
 
-    # 加载 PDF
-    text_loader = PyPDFLoader(tmp_path)
+    # 加载 PDF / TXT / DOCX
+    if file_ext == '.pdf':
+        text_loader = PyPDFLoader(tmp_path)
+    elif file_ext == '.txt':
+        text_loader = TextLoader(tmp_path, encoding='utf-8')
+    elif file_ext == '.docx':
+        TextLoader == Docx2txtLoader(tmp_path)
+    else:
+        raise ValueError(f'Unsupportive file type {file_ext}')
     docs = text_loader.load()
 
     # 2. 分割文本
@@ -90,7 +100,6 @@ def get_rag_response(question: str, uploaded_file, session_id: str = 'user1') ->
         "context": lambda x: '\n'.join([doc.page_content for doc in retriever.invoke(x["question"])]),
         "question": lambda x: x['question'],
     }
-
     rag_chain = rag_runnable | prompt | llm
 
     # 带历史记忆的 RAG
@@ -111,4 +120,4 @@ def get_rag_response(question: str, uploaded_file, session_id: str = 'user1') ->
 # ======= 测试 =======
 # if __name__ == "__main__":
     # print("#####: ", get_rag_response("Transformer的论文标题是什么?"))
-    # print("@@@@@: ", get_rag_response("Transformer的论文链接是什么?"))
+    # print("@@@@@: ", get_rag_response("GPT3基于什么技术开发?"))
