@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, FewShotChatMessagePromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
 from langchain_community.vectorstores import FAISS
@@ -87,10 +87,30 @@ def get_rag_response(question: str, uploaded_file, session_id: str = 'user1') ->
         api_key=os.getenv('DEEPSEEK_API_KEY')
     )
 
-    # Prompt 模板
+    # Prompt 模板 = few shot chat prompt template + chat prompt template
+    example_prompt = ChatPromptTemplate.from_messages([
+        ('human', '{question}'),
+        ('ai', '{answer}')
+    ])
+
+    examples = [
+        {
+            'question': '世界上最高的山是哪一座？',
+            'answer': '根据上传的参考文档: 世界上最高的山是珠穆朗玛峰, 高度为8848米。'
+        },
+        {
+            'question': '谁是世界上跑的最快的人？',
+            'answer': '你上传的参考文档不包括此问题。网络搜索结果显示百米纪录保持者是尤塞恩·博尔特的9秒58'
+        }
+    ]
+    few_shot_chat_prompt = FewShotChatMessagePromptTemplate(
+        example_prompt=example_prompt, examples=examples
+    )
+
     prompt = ChatPromptTemplate.from_messages([
         MessagesPlaceholder('chat_history'),
         ('system', '你是一个智能文档分析助手。请基于以下参考文档回答问题。\n\n{context}'),
+        few_shot_chat_prompt,
         ('human', '{question}')
     ])
 
