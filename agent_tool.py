@@ -15,16 +15,16 @@ PROMPT_TEMPLATE = """
    Final Answer: {"answer": "订单量最高的产品ID是'MNWC3-067'"}
 
 2. 如果用户需要一个表格，按照这样的格式回答：
-   {"table": {"columns": ["column1", "column2", ...], "data": [[value1, value2, ...], [value1, value2, ...], ...]}}
+   Final Answer: {"table": {"columns": ["column1", "column2", ...], "data": [[value1, value2, ...], [value1, value2, ...], ...]}}
 
 3. 如果用户的请求适合返回条形图，按照这样的格式回答：
-   {"bar": {"columns": ["A", "B", "C", ...], "data": [34, 21, 91, ...]}}
+   Final Answer: {"bar": {"columns": ["A", "B", "C", ...], "data": [34, 21, 91, ...]}}
 
 4. 如果用户的请求适合返回折线图，按照这样的格式回答：
-   {"line": {"columns": ["A", "B", "C", ...], "data": [34, 21, 91, ...]}}
+   Final Answer: {"line": {"columns": ["A", "B", "C", ...], "data": [34, 21, 91, ...]}}
 
 5. 如果用户的请求适合返回散点图，按照这样的格式回答：
-   {"scatter": {"columns": ["A", "B", "C", ...], "data": [34, 21, 91, ...]}}
+   Final Answer: {"scatter": {"columns": ["A", "B", "C", ...], "data": [34, 21, 91, ...]}}
 注意：我们只支持三种类型的图表："bar", "line" 和 "scatter"。
 
 
@@ -57,13 +57,13 @@ def dataframe_agent(df, query):
     return response_dict
 
 
-df = pd.read_csv('house_price.csv')
-
+# df = pd.read_csv('house_price.csv')
 # print('$$$$$: ', dataframe_agent(df, '数据集中所有房子卧室数的平均值是多少？'))
 # $$$$$:  {'answer': '数据集中所有房子卧室数的平均值是2.97'}
 # print('$$$$$: ', dataframe_agent(df, '用条形图展示所有房子的装修状态'))
 # $$$$$:  {'bar': {'columns': ['furnished', 'semi-furnished', 'unfurnished'], 'data': [140, 227, 178]}}
 # print('$$$$$: ', dataframe_agent(df, '提取价格高于1000万的房子信息。'))
+
 
 # Agent 完整思考-行动-观察的步骤过程如下(针对上一个1000万的问题):
 # > Entering new AgentExecutor chain...
