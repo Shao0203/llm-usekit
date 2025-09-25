@@ -1,5 +1,5 @@
 import streamlit as st
-from rag_tool import get_rag_response
+from utils.rag_tool import get_rag_response
 
 
 if 'session_id' not in st.session_state:

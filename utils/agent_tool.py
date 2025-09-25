@@ -1,10 +1,8 @@
 import os
 import json
-import pandas as pd
 from langchain_openai import ChatOpenAI
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
-# create_pandas_dataframe_agent 是 ReAct agent，它要求 LLM 输出的格式严格是：
-# Thought: ... Action: ... Action Input: ... Final Answer: ...
+
 
 PROMPT_TEMPLATE = """
 你是一位数据分析助手，你的回应内容取决于用户的请求内容。
@@ -56,13 +54,17 @@ def dataframe_agent(df, query):
     response_dict = json.loads(response['output'])
     return response_dict
 
-
+# import pandas as pd
 # df = pd.read_csv('house_price.csv')
 # print('$$$$$: ', dataframe_agent(df, '数据集中所有房子卧室数的平均值是多少？'))
 # $$$$$:  {'answer': '数据集中所有房子卧室数的平均值是2.97'}
 # print('$$$$$: ', dataframe_agent(df, '用条形图展示所有房子的装修状态'))
 # $$$$$:  {'bar': {'columns': ['furnished', 'semi-furnished', 'unfurnished'], 'data': [140, 227, 178]}}
 # print('$$$$$: ', dataframe_agent(df, '提取价格高于1000万的房子信息。'))
+
+
+# create_pandas_dataframe_agent 是 ReAct agent，它要求 LLM 输出的格式严格是：
+# Loop[Thought: ... Action: ... Action Input: ...] Final Answer: ...
 
 
 # Agent 完整思考-行动-观察的步骤过程如下(针对上一个1000万的问题):

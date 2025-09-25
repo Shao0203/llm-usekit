@@ -1,5 +1,5 @@
 import streamlit as st
-from chat import get_chat_response_stream
+from utils.chat import get_chat_response_stream
 
 
 left_column, right_column = st.columns([4, 1])

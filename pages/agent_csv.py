@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from agent_tool import dataframe_agent
+from utils.agent_tool import dataframe_agent
 
 
 def create_chart(input_data, chart_type):
