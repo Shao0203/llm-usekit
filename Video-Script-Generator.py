@@ -1,5 +1,5 @@
 import streamlit as st
-from utils import Generator
+from utils.vsgen import Generator
 from datetime import datetime
 import json
 

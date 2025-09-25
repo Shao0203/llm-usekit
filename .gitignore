@@ -6,7 +6,6 @@ __pycache__/
 # user ignore file
 .DS_Store
 config.py
-backup.py
 draft.py
 demo.py
 

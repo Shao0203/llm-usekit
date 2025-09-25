@@ -1,6 +1,6 @@
 import pytest
 import unittest.mock as mock
-from utils import Generator
+from utils.vsgen import Generator
 
 
 @pytest.fixture
@@ -9,7 +9,7 @@ def generator():
 
 
 # ========== test _get_llm ==========
-@mock.patch('utils.Generator._get_llm')
+@mock.patch('utils.vsgen.Generator._get_llm')
 def test_get_llm_call(mock_get_llm):
     fake_llm = mock.MagicMock(name='MockLLM')
     mock_get_llm.return_value = fake_llm
@@ -19,7 +19,7 @@ def test_get_llm_call(mock_get_llm):
     mock_get_llm.assert_called_once()
 
 
-@mock.patch('utils.ChatOpenAI')
+@mock.patch('utils.vsgen.ChatOpenAI')
 def test_get_llm_success(mock_chat_openai):
     fake_llm = mock.MagicMock(name='MockLLM')
     mock_chat_openai.return_value = fake_llm
@@ -30,7 +30,7 @@ def test_get_llm_success(mock_chat_openai):
     assert mock_chat_openai.call_count == 2
 
 
-@mock.patch('utils.ChatOpenAI')
+@mock.patch('utils.vsgen.ChatOpenAI')
 def test_get_llm_kimi_success(mock_chat_openai):
     fake_llm = mock.MagicMock(name='MockLLM')
     mock_chat_openai.return_value = fake_llm
@@ -40,21 +40,21 @@ def test_get_llm_kimi_success(mock_chat_openai):
     mock_chat_openai.assert_called_once()
 
 
-@mock.patch('utils.Generator._log_warning')
+@mock.patch('utils.vsgen.Generator._log_warning')
 def test_get_llm_failure_logs(mock_log):
     generator = Generator('fake_token', 'CloseAI', 0.5)
     assert generator._llm is None
     mock_log.assert_called_once()
 
 
-@mock.patch('utils.ChatOpenAI', side_effect=Exception("boom"))
+@mock.patch('utils.vsgen.ChatOpenAI', side_effect=Exception("boom"))
 def test_get_llm_chatopenai_error(mock_chat_openai):
     generator = Generator('fake_token', 'OpenAI', 0.5)
     assert generator._llm is None
 
 
 # ========== test _get_prompts_template ==========
-@mock.patch('utils.Generator._get_prompts_template')
+@mock.patch('utils.vsgen.Generator._get_prompts_template')
 def test_get_prompts_template_call(mock_get_prompts_template):
     fake_title_template = mock.MagicMock(name='MockTitleTemplate')
     fake_script_template = mock.MagicMock(name='MockScriptTemplate')
@@ -65,7 +65,7 @@ def test_get_prompts_template_call(mock_get_prompts_template):
     assert title_tplt is fake_title_template and script_tplt is fake_script_template
 
 
-@mock.patch('utils.ChatPromptTemplate')
+@mock.patch('utils.vsgen.ChatPromptTemplate')
 def test_get_prompts_template_success(mock_chat_prompt_template, generator):
     fake_template = mock.MagicMock(name='MockTemplate')
     mock_chat_prompt_template.return_value = fake_template
@@ -98,7 +98,7 @@ def test_get_prompts_template_french(generator):
 
 
 # ========== test _get_wikipedia ==========
-@mock.patch('utils.Generator._get_wikipedia')
+@mock.patch('utils.vsgen.Generator._get_wikipedia')
 def test_get_wikipedia_call(mock_get_wikipedia, generator):
     mock_get_wikipedia.return_value = 'Mock search result'
     wiki_result = generator._get_wikipedia('fake_subject', 'English')
@@ -106,7 +106,7 @@ def test_get_wikipedia_call(mock_get_wikipedia, generator):
     mock_get_wikipedia.assert_called_once()
 
 
-@mock.patch('utils.WikipediaAPIWrapper.run')
+@mock.patch('utils.vsgen.WikipediaAPIWrapper.run')
 def test_get_wikipedia_success(mock_run, generator):
     mock_run.return_value = 'Mock search result'
     wiki_result = generator._get_wikipedia('fake_subject', 'English')
@@ -114,7 +114,7 @@ def test_get_wikipedia_success(mock_run, generator):
     mock_run.assert_called_once()
 
 
-@mock.patch('utils.WikipediaAPIWrapper.run', side_effect=Exception('Mock search failed'))
+@mock.patch('utils.vsgen.WikipediaAPIWrapper.run', side_effect=Exception('Mock search failed'))
 def test_get_wikipedia_error(mock_run, generator):
     wiki_result = generator._get_wikipedia('fake_subject', 'English')
     assert wiki_result.startswith('Fallback')
@@ -122,7 +122,7 @@ def test_get_wikipedia_error(mock_run, generator):
 
 
 # ========== test _generate_title ==========
-@mock.patch('utils.Generator._generate_title')
+@mock.patch('utils.vsgen.Generator._generate_title')
 def test_generate_title_call(mock_generate_title, generator):
     # test only the function call, won't go through the inside logic
     mock_generate_title.return_value = 'Mock Title'
@@ -149,7 +149,7 @@ def test_generate_title_success(generator):
         {'subject': 'subject1', 'lang': 'English'})
 
 
-@mock.patch('utils.Generator._get_llm')
+@mock.patch('utils.vsgen.Generator._get_llm')
 def test_generate_title_success_chinese(mock_get_llm):
     fake_llm = mock.MagicMock(name='MockLLM')
     fake_template = mock.MagicMock(name='MockTemplate')
@@ -180,7 +180,7 @@ def test_generate_title_failure(generator):
 
 
 # ========== test _generate_content ==========
-@mock.patch('utils.Generator._generate_content')
+@mock.patch('utils.vsgen.Generator._generate_content')
 def test_generate_content_call(mock_generate_content, generator):
     # test only the function call, won't go through the inside logic
     mock_generate_content.return_value = 'Mock script'
@@ -189,7 +189,7 @@ def test_generate_content_call(mock_generate_content, generator):
     assert script == 'Mock script'
 
 
-@mock.patch('utils.Generator._get_llm')
+@mock.patch('utils.vsgen.Generator._get_llm')
 def test_generate_content_success(mock_get_llm):
     fake_llm = mock.MagicMock(name='MockLLM')
     fake_template = mock.MagicMock(name='MockTemplate')
@@ -241,7 +241,7 @@ def test_generate_content_failure(generator):
 
 
 # ========== test generate_script ==========
-@mock.patch('utils.Generator.generate_script')
+@mock.patch('utils.vsgen.Generator.generate_script')
 def test_generate_script_call(mock_generate_script, generator):
     # test only the function call, won't go through the inside logic
     mock_generate_script.return_value = ('wiki', 'title', 'script')
@@ -250,11 +250,11 @@ def test_generate_script_call(mock_generate_script, generator):
     mock_generate_script.assert_called_once()
 
 
-@mock.patch('utils.Generator._generate_content')
-@mock.patch('utils.Generator._generate_title')
-@mock.patch('utils.Generator._get_wikipedia')
-@mock.patch('utils.Generator._get_prompts_template')
-@mock.patch('utils.Generator._get_llm')
+@mock.patch('utils.vsgen.Generator._generate_content')
+@mock.patch('utils.vsgen.Generator._generate_title')
+@mock.patch('utils.vsgen.Generator._get_wikipedia')
+@mock.patch('utils.vsgen.Generator._get_prompts_template')
+@mock.patch('utils.vsgen.Generator._get_llm')
 def test_generate_script_success(
         mock_get_llm, mock_get_prompts_template, mock_get_wikipedia,
         mock_generate_title, mock_generate_content):
@@ -271,7 +271,7 @@ def test_generate_script_success(
     assert result == ('Mock Wiki', 'Mock Title', 'Mock Script')
 
 
-@mock.patch('utils.Generator._get_llm')
+@mock.patch('utils.vsgen.Generator._get_llm')
 def test_generate_script_llm_init_failed(mock_get_llm):
     mock_get_llm.return_value = None
     generator = Generator('fake_token', 'OpenAI', 0.5)
@@ -280,7 +280,7 @@ def test_generate_script_llm_init_failed(mock_get_llm):
     mock_get_llm.assert_called_once()
 
 
-@mock.patch('utils.Generator._get_prompts_template', side_effect=Exception('boom'))
+@mock.patch('utils.vsgen.Generator._get_prompts_template', side_effect=Exception('boom'))
 def test_generate_script_failure(mock_get_prompts_template, generator):
     result = generator.generate_script('subject', 1, 'English', 'ref')
     assert result == ('Wiki fetch failed',
