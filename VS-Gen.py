@@ -13,7 +13,7 @@ with st.sidebar:
     t = TEXTS[lang]  # define current language dictionary
 
     model_provider = st.selectbox(
-        t['select_model'], ['OpenAI', 'DeepSeek', 'KIMI'], index=None)
+        t['select_model'], ['OpenAI', 'DeepSeek', 'KIMI'], index=1)
     api_key = st.text_input(t['enter_api_key'], type='password')
     remember = st.checkbox(t['remember'])
     st.divider()
@@ -25,7 +25,7 @@ with st.sidebar:
     st.subheader(t['gen_history'])
     if 'history' in st.session_state:
         for idx, item in enumerate(st.session_state.history[::-1][:5]):
-            st.caption(f"{idx+1}: {item['subject']} - {item['title']}")
+            st.caption(f"{idx+1}: {item['subject']} - {item['title'][:50]}...")
 
 # page title
 st.title(t['title'])
