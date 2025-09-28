@@ -10,7 +10,7 @@ if 'sid' not in st.session_state:
 st.title('📑 AI文档问答助手')
 
 uploaded_file = st.file_uploader(
-    '上传你的文件，作为后续回答的参考', type=['txt', 'pdf', 'docx'])
+    '上传你的文件，AI将参考它回答你的问题', type=['txt', 'pdf', 'docx'])
 
 left, right = st.columns([6, 1])
 question = left.text_input(label='问题', label_visibility='collapsed',

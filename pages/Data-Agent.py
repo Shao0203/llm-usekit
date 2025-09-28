@@ -15,7 +15,7 @@ def create_chart(input_data, chart_type):
         st.scatter_chart(df_data)
 
 
-st.title('📈CSV数据分析助手')
+st.title('📈数据分析智能体')
 
 uploaded_csv = st.file_uploader('请上传你要分析的CSV文件', type='csv')
 
