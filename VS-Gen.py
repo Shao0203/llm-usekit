@@ -9,17 +9,18 @@ with open('texts.json', 'r', encoding='utf-8') as f:
 
 # sidebar
 with st.sidebar:
-    lang = st.radio(label='选择语言', options=['Chinese', 'English'])
+    lang = st.radio(label='选择语言 / Language', options=['Chinese', 'English'])
     t = TEXTS[lang]  # define current language dictionary
 
     model_provider = st.selectbox(
-        t['select_model'], ['OpenAI', 'DeepSeek', 'KIMI'], index=1)
-    remember = st.checkbox(t['remember'])
+        t['select_model'], ['OpenAI', 'DeepSeek', 'Kimi', 'Qwen'], index=1)
+    # remember = st.checkbox(t['remember'])
     # st.divider()
-    with st.expander('申请大模型密钥'):
-        st.markdown(t['get_openai_key'])
-        st.markdown(t['get_deepseek_key'])
-        st.markdown(t['get_kimi_key'])
+    # with st.expander(t['apply_api_key']):
+    #     st.markdown(t['get_openai_key'])
+    #     st.markdown(t['get_deepseek_key'])
+    #     st.markdown(t['get_kimi_key'])
+    #     st.markdown(t['get_qwen_key'])
 
     st.subheader(t['gen_history'])
     if 'history' in st.session_state:
@@ -62,7 +63,7 @@ if submit:
         generator = Generator(model_provider, creativity)
         wiki_search, title, script = generator.generate_script(
             subject, video_length, lang, reference_prompt)
-    # add history and config into session_state
+    # add generation history into session_state
     if 'history' not in st.session_state:
         st.session_state.history = []
     st.session_state.history.append({
@@ -70,14 +71,6 @@ if submit:
         'title': title,
         'time': datetime.now().strftime('%Y-%m-%d %H:%M')
     })
-    if remember:
-        st.session_state.config = {
-            'lang': lang,
-            'model_provider': model_provider,
-            'subject': subject,
-            'video_length': video_length,
-            'creativity': creativity
-        }
     # display the generated results
     st.success(t['success'])
     st.subheader(t['title_label'])

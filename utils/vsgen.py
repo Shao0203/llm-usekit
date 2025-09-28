@@ -2,6 +2,7 @@
 
 import json
 import os
+import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.utilities import WikipediaAPIWrapper
@@ -57,12 +58,20 @@ class Generator:
             return wiki, title, script
 
     # ------------------- private methods below -------------------
+    def _get_api_key(self, key_name):
+        """Private: get model api_key from secrets or env variable."""
+        try:
+            return st.secrets[key_name]
+        except Exception:
+            return os.getenv(key_name)
+
     def _get_llm(self):
         """Private: Get selected LLM instance."""
         model_options = {
-            'OpenAI': {'model': 'gpt-4o', 'base_url': '', },
-            'KIMI': {'model': 'kimi-k2-0711-preview', 'base_url': 'https://api.moonshot.cn/v1'},
-            'DeepSeek': {'model': 'deepseek-chat', 'base_url': 'https://api.deepseek.com/v1'},
+            'OpenAI': {'model': 'gpt-5-mini', 'key_name': 'OPENAI_API_KEY', 'base_url': ''},
+            'Kimi': {'model': 'kimi-k2-0905-preview', 'key_name': 'KIMI_API_KEY', 'base_url': 'https://api.moonshot.cn/v1'},
+            'DeepSeek': {'model': 'deepseek-chat', 'key_name': 'DEEPSEEK_API_KEY', 'base_url': 'https://api.deepseek.com/v1'},
+            'Qwen': {'model': 'qwen-plus', 'key_name': 'QWEN_API_KEY', 'base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1'},
         }
         try:
             provider = self._model_provider
@@ -72,7 +81,7 @@ class Generator:
             llm = ChatOpenAI(
                 base_url=model_options[provider]['base_url'],
                 model=model_options[provider]['model'],
-                api_key=os.getenv('OPENAI_API_KEY'),
+                api_key=self._get_api_key(model_options[provider]['key_name']),
                 temperature=self._creativity
             )
         except Exception as e:
