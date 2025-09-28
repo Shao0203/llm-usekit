@@ -14,13 +14,12 @@ with st.sidebar:
 
     model_provider = st.selectbox(
         t['select_model'], ['OpenAI', 'DeepSeek', 'KIMI'], index=1)
-    api_key = st.text_input(t['enter_api_key'], type='password')
     remember = st.checkbox(t['remember'])
-    st.divider()
-
-    st.markdown(t['get_openai_key'])
-    st.markdown(t['get_deepseek_key'])
-    st.markdown(t['get_kimi_key'])
+    # st.divider()
+    with st.expander('申请大模型密钥'):
+        st.markdown(t['get_openai_key'])
+        st.markdown(t['get_deepseek_key'])
+        st.markdown(t['get_kimi_key'])
 
     st.subheader(t['gen_history'])
     if 'history' in st.session_state:
@@ -46,15 +45,12 @@ if uploaded_file:
 submit = st.button(
     t['create_script'],
     type='primary',
-    disabled=not (model_provider and api_key and subject)
+    disabled=not (model_provider and subject)
 )
 
 # validate empty value
 if submit and not model_provider:
     st.info(t['select_model_info'])
-    st.stop()
-if submit and not api_key:
-    st.info(t['enter_api_key_info'])
     st.stop()
 if submit and not subject:
     st.info(t['enter_subject_info'])
@@ -63,7 +59,7 @@ if submit and not subject:
 if submit:
     # generate results
     with st.spinner(t['loading']):
-        generator = Generator(api_key, model_provider, creativity)
+        generator = Generator(model_provider, creativity)
         wiki_search, title, script = generator.generate_script(
             subject, video_length, lang, reference_prompt)
     # add history and config into session_state

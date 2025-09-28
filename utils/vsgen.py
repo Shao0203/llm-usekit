@@ -1,11 +1,13 @@
 """ This module provides functions to generate video title/script based on user's preference. """
 
+import json
+import os
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain_community.utilities import WikipediaAPIWrapper
 from typing import Tuple, Literal
 from functools import lru_cache
-import json
+
 
 __all__ = ['Generator']  # Expose only one interface - Generator
 
@@ -13,9 +15,8 @@ __all__ = ['Generator']  # Expose only one interface - Generator
 class Generator:
     """A generator uses LLM to create video script"""
 
-    def __init__(self, api_key, model_provider, creativity):
+    def __init__(self, model_provider, creativity):
         """All attributes are private and only used for llm initialization"""
-        self._api_key = api_key
         self._model_provider = model_provider
         self._creativity = creativity
         self._llm = self._get_llm()
@@ -59,7 +60,7 @@ class Generator:
     def _get_llm(self):
         """Private: Get selected LLM instance."""
         model_options = {
-            'OpenAI': {'model': 'gpt-4o', 'base_url': ''},
+            'OpenAI': {'model': 'gpt-4o', 'base_url': '', },
             'KIMI': {'model': 'kimi-k2-0711-preview', 'base_url': 'https://api.moonshot.cn/v1'},
             'DeepSeek': {'model': 'deepseek-chat', 'base_url': 'https://api.deepseek.com/v1'},
         }
@@ -71,7 +72,7 @@ class Generator:
             llm = ChatOpenAI(
                 base_url=model_options[provider]['base_url'],
                 model=model_options[provider]['model'],
-                api_key=self._api_key,
+                api_key=os.getenv('OPENAI_API_KEY'),
                 temperature=self._creativity
             )
         except Exception as e:
