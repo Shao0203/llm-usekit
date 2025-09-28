@@ -1,31 +1,15 @@
 import streamlit as st
-from utils.vsgen import Generator
 from datetime import datetime
-import json
+from utils.vsgen import Generator
+from utils.sidebar import render_sidebar
 
-# multi-languages dictionary
-with open('texts.json', 'r', encoding='utf-8') as f:
-    TEXTS = json.load(f)
+# Initialize session_state
+# if 'lang' not in st.session_state:
+#     st.session_state.lang = 'Chinese'
+# if 'model_provider' not in st.session_state:
+#     st.session_state.model_provider = 'DeepSeek'
 
-# sidebar
-with st.sidebar:
-    lang = st.radio(label='选择语言 / Language', options=['Chinese', 'English'])
-    t = TEXTS[lang]  # define current language dictionary
-
-    model_provider = st.selectbox(
-        t['select_model'], ['OpenAI', 'DeepSeek', 'Kimi', 'Qwen'], index=1)
-    # remember = st.checkbox(t['remember'])
-    # st.divider()
-    # with st.expander(t['apply_api_key']):
-    #     st.markdown(t['get_openai_key'])
-    #     st.markdown(t['get_deepseek_key'])
-    #     st.markdown(t['get_kimi_key'])
-    #     st.markdown(t['get_qwen_key'])
-
-    st.subheader(t['gen_history'])
-    if 'history' in st.session_state:
-        for idx, item in enumerate(st.session_state.history[::-1][:5]):
-            st.caption(f"{idx+1}: {item['subject']} - {item['title'][:50]}...")
+lang, t, model_provider = render_sidebar()
 
 # page title
 st.title(t['title'])
@@ -80,4 +64,4 @@ if submit:
     with st.expander(t['wiki_label']):
         st.info(wiki_search)
 
-# print(st.session_state)
+print(st.session_state)

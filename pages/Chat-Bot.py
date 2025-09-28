@@ -1,6 +1,9 @@
 import streamlit as st
 from utils.chat import get_chat_response_stream
+from utils.sidebar import render_sidebar
 
+
+lang, t, model_provider = render_sidebar()
 
 left_column, right_column = st.columns([4, 1])
 left_column.title('💬智能聊天助手')
@@ -44,3 +47,5 @@ if prompt_text:
     #     response = get_chat_response(prompt_text, st.session_state.session_id)
     # st.session_state.messages.append({'role': 'ai', 'content': response})
     # st.chat_message('ai').write(response)
+
+print(st.session_state)

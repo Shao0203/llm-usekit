@@ -1,10 +1,11 @@
 import streamlit as st
 from utils.rag_tool import get_rag_response
+from utils.sidebar import render_sidebar
 
+
+lang, t, model_provider = render_sidebar()
 
 if 'sid' not in st.session_state:
-    st.session_state.sid = 'session_1'
-    st.session_state.session_counter = 1
     st.session_state.chat_history = []
 
 st.title('📑 AI文档问答助手')
@@ -19,8 +20,7 @@ submit = right.button('提交问题', disabled=not (uploaded_file and question))
 
 if submit and uploaded_file and question:
     with st.spinner('AI is thinking...'):
-        response = get_rag_response(
-            question, uploaded_file, st.session_state.sid)
+        response = get_rag_response(question, uploaded_file)
     st.write('### 答案')
     st.write(response)
     st.session_state.chat_history.append(question)
@@ -33,4 +33,4 @@ if st.session_state.chat_history:
             st.write(st.session_state.chat_history[i+1])
             st.divider()
 
-# print('#####: ', st.session_state.chat_history)
+print(st.session_state)

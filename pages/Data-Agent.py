@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 from utils.agent_tool import dataframe_agent
+from utils.sidebar import render_sidebar
+
+
+lang, t, model_provider = render_sidebar()
 
 
 def create_chart(input_data, chart_type):
@@ -48,3 +52,5 @@ if submit and uploaded_csv and query:
 
     with st.expander('后台生成的响应数据'):
         st.write(response_dict)
+
+print(st.session_state)
