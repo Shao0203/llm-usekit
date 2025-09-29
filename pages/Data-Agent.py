@@ -4,7 +4,7 @@ from utils.agent_tool import dataframe_agent
 from utils.sidebar import render_sidebar
 
 
-lang, t, model_provider = render_sidebar()
+lang, txt, model_provider = render_sidebar()
 
 
 def create_chart(input_data, chart_type):
@@ -19,23 +19,24 @@ def create_chart(input_data, chart_type):
         st.scatter_chart(df_data)
 
 
-st.title('📈数据分析智能体')
+st.title(txt['agent_title'])
 
-uploaded_csv = st.file_uploader('请上传你要分析的CSV文件', type='csv')
+uploaded_csv = st.file_uploader(txt['agent_upload_hint'], type='csv')
 
 if uploaded_csv:
     st.session_state['df'] = pd.read_csv(uploaded_csv)
-    with st.expander('原始数据'):
+    with st.expander(txt['original_data']):
         st.dataframe(st.session_state['df'])
 
 left, right = st.columns([6, 1])
-query = left.text_area(label='问题', label_visibility='collapsed',
-                       placeholder='输入问题，如分析或提取数据，或可视化要求（支持条形图、折线图、散点图）')
+query = left.text_area(label='question', label_visibility='collapsed',
+                       placeholder=txt['agent_question_hint'])
 space_line = right.write('')
-submit = right.button('生成答案', disabled=not (uploaded_csv and query))
+submit = right.button(txt['submit_question'],
+                      disabled=not (uploaded_csv and query))
 
 if submit and uploaded_csv and query:
-    with st.spinner('🤔AI努力思考中，请稍等...☕️'):
+    with st.spinner(txt['loading']):
         response_dict = dataframe_agent(st.session_state['df'], query)
 
     if 'answer' in response_dict:
@@ -50,7 +51,7 @@ if submit and uploaded_csv and query:
     if 'scatter' in response_dict:
         create_chart(response_dict['scatter'], 'scatter')
 
-    with st.expander('后台生成的响应数据'):
+    with st.expander(txt['ai_res_data']):
         st.write(response_dict)
 
 print(st.session_state)

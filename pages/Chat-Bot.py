@@ -3,11 +3,11 @@ from utils.chat import get_chat_response_stream
 from utils.sidebar import render_sidebar
 
 
-lang, t, model_provider = render_sidebar()
+lang, txt, model_provider = render_sidebar()
 
 left_column, right_column = st.columns([4, 1])
-left_column.title('💬智能聊天助手')
-submit = right_column.button('清空聊天')
+left_column.title(txt['chat_title'])
+submit = right_column.button(txt['clear_history'])
 # 点击按钮时，清空聊天并切换到新的 session_id
 if submit:
     st.session_state.messages = []
@@ -16,7 +16,7 @@ if submit:
 
 # 初始化 session_id 和计数器
 if 'session_id' not in st.session_state:
-    st.session_state.messages = [{'role': 'ai', 'content': '你好, 我是你的AI助手!'}]
+    st.session_state.messages = [{'role': 'ai', 'content': txt['ai_greeting']}]
     st.session_state.session_counter = 1
     st.session_state.session_id = f'session_{st.session_state.session_counter}'
 
@@ -32,7 +32,7 @@ if prompt_text:
     # 流式输出
     with st.chat_message('ai'):
         placeholder = st.empty()  # 占位符
-        placeholder.markdown("🤔 AI is thinking...")  # 初始提示
+        placeholder.markdown(txt['loading'])  # 初始提示
 
         response_text = ""  # 累积AI的回复
         for chunk in get_chat_response_stream(prompt_text, st.session_state.session_id):

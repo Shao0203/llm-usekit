@@ -22,10 +22,10 @@ def render_sidebar():
             index=0 if st.session_state.lang == 'Chinese' else 1,
         )
 
-        t = TEXTS[lang]  # define current language dictionary
+        txt = TEXTS[lang]  # define current language dictionary
 
         model_provider = st.selectbox(
-            label=t['select_model'],
+            label=txt['select_model'],
             options=['DeepSeek', 'Kimi', 'Qwen', 'OpenAI'],
             index=['DeepSeek', 'Kimi', 'Qwen', 'OpenAI'].index(
                 st.session_state.model_provider),
@@ -37,18 +37,18 @@ def render_sidebar():
         if model_provider:
             st.session_state.model_provider = model_provider
 
-        st.subheader(t['gen_history'])
+        st.subheader(txt['gen_history'])
 
         if 'history' in st.session_state:
             for idx, item in enumerate(st.session_state.history[::-1][:5]):
                 st.caption(
                     f"{idx+1}: {item['subject']} - {item['title'][:50]}...")
 
-    return lang, t, model_provider
+    return lang, txt, model_provider
 
     # st.divider()
-    # with st.expander(t['apply_api_key']):
-    #     st.markdown(t['get_openai_key'])
-    #     st.markdown(t['get_deepseek_key'])
-    #     st.markdown(t['get_kimi_key'])
-    #     st.markdown(t['get_qwen_key'])
+    # with st.expander(txt['apply_api_key']):
+    #     st.markdown(txt['get_openai_key'])
+    #     st.markdown(txt['get_deepseek_key'])
+    #     st.markdown(txt['get_kimi_key'])
+    #     st.markdown(txt['get_qwen_key'])

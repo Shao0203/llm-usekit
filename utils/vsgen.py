@@ -101,13 +101,13 @@ class Generator:
             empty_prompt_template = ChatPromptTemplate(
                 [('human', 'Fallback prompt: no template available.')])
             return (empty_prompt_template, empty_prompt_template)
-        t = TEXTS.get(lang, {"prompt_title_string": "Fallback title",
-                             "prompt_script_string": "Fallback script"})
+        txt = TEXTS.get(lang, {"prompt_title_string": "Fallback title",
+                               "prompt_script_string": "Fallback script"})
         title_template = ChatPromptTemplate([
-            ("human", f"""{t['prompt_title_string']}""")
+            ("human", f"""{txt['prompt_title_string']}""")
         ])
         script_template = ChatPromptTemplate([
-            ("human", f"""{t['prompt_script_string']}""")
+            ("human", f"""{txt['prompt_script_string']}""")
         ])
         return title_template, script_template
 
