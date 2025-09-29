@@ -35,7 +35,7 @@ if prompt_text:
         placeholder.markdown(txt['loading'])  # 初始提示
 
         response_text = ""  # 累积AI的回复
-        for chunk in get_chat_response_stream(prompt_text, st.session_state.session_id):
+        for chunk in get_chat_response_stream(model_provider, prompt_text, st.session_state.session_id):
             response_text += chunk
             placeholder.markdown(response_text)  # 动态替换内容
 

@@ -37,7 +37,8 @@ submit = right.button(txt['submit_question'],
 
 if submit and uploaded_csv and query:
     with st.spinner(txt['loading']):
-        response_dict = dataframe_agent(st.session_state['df'], query)
+        response_dict = dataframe_agent(
+            model_provider, st.session_state['df'], query)
 
     if 'answer' in response_dict:
         st.write(response_dict['answer'])

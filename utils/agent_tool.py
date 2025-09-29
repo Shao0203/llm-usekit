@@ -1,7 +1,8 @@
-import os
+""" This module provides functions to create agent to response json string based on requirements."""
+
 import json
-from langchain_openai import ChatOpenAI
 from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
+from utils.llm_factory import get_llm
 
 
 PROMPT_TEMPLATE = """
@@ -33,18 +34,11 @@ PROMPT_TEMPLATE = """
 """
 
 
-def dataframe_agent(df, query):
-    llm = ChatOpenAI(
-        model='deepseek-chat',
-        base_url='https://api.deepseek.com/v1',
-        api_key=os.getenv('DEEPSEEK_API_KEY'),
-        temperature=0,
-    )
-
+def dataframe_agent(model_provider, df, query):
     agent = create_pandas_dataframe_agent(
-        llm=llm,
+        llm=get_llm(model_provider),
         df=df,
-        verbose=True,
+        #   verbose=True,
         allow_dangerous_code=True,
         agent_executor_kwargs={'handle_parsing_errors': True},
     )
@@ -52,6 +46,7 @@ def dataframe_agent(df, query):
     prompt = PROMPT_TEMPLATE + query
     response = agent.invoke({'input': prompt})
     response_dict = json.loads(response['output'])
+
     return response_dict
 
 # import pandas as pd

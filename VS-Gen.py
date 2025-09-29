@@ -48,7 +48,8 @@ if submit:
     st.session_state.history.append({
         'subject': subject,
         'title': title,
-        'time': datetime.now().strftime('%Y-%m-%d %H:%M')
+        'time': datetime.now().strftime('%Y-%m-%d %H:%M'),
+        'model': model_provider,
     })
     # display the generated results
     st.success(txt['success'])

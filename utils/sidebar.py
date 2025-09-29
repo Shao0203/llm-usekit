@@ -45,9 +45,10 @@ def render_sidebar():
         st.subheader(txt['gen_history'])
 
         if 'history' in st.session_state:
-            for idx, item in enumerate(st.session_state.history[::-1][:5]):
+            for index, item in enumerate(st.session_state.history[::-1][:5]):
                 st.caption(
-                    f"{idx+1}: {item['subject']} - {item['title'][:50]}...")
+                    f"{index+1}: {item['subject']} - {item['title'][:80]}...【{item['model']}】"
+                )
 
     return lang, txt, model_provider
 

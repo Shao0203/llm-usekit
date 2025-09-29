@@ -1,13 +1,11 @@
 """ This module provides functions to generate video title/script based on user's preference. """
 
 import json
-import os
-import streamlit as st
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from langchain_community.utilities import WikipediaAPIWrapper
 from typing import Tuple, Literal
 from functools import lru_cache
+from utils.llm_factory import get_llm
 
 
 __all__ = ['Generator']  # Expose only one interface - Generator
@@ -18,9 +16,7 @@ class Generator:
 
     def __init__(self, model_provider, creativity):
         """All attributes are private and only used for llm initialization"""
-        self._model_provider = model_provider
-        self._creativity = creativity
-        self._llm = self._get_llm()
+        self._llm = get_llm(model_provider, creativity)
 
     def generate_script(self, subject: str, video_length: float,
                         lang: Literal['Chinese', 'English'], reference_prompt: str) -> Tuple[str, str, str]:
@@ -58,38 +54,6 @@ class Generator:
             return wiki, title, script
 
     # ------------------- private methods below -------------------
-    def _get_api_key(self, key_name):
-        """Private: get model api_key from secrets or env variable."""
-        try:
-            return st.secrets[key_name]
-        except Exception:
-            return os.getenv(key_name)
-
-    def _get_llm(self):
-        """Private: Get selected LLM instance."""
-        model_options = {
-            'OpenAI': {'model': 'gpt-5-mini', 'key_name': 'OPENAI_API_KEY', 'base_url': ''},
-            'Kimi': {'model': 'kimi-k2-0905-preview', 'key_name': 'KIMI_API_KEY', 'base_url': 'https://api.moonshot.cn/v1'},
-            'DeepSeek': {'model': 'deepseek-chat', 'key_name': 'DEEPSEEK_API_KEY', 'base_url': 'https://api.deepseek.com/v1'},
-            'Qwen': {'model': 'qwen-plus', 'key_name': 'QWEN_API_KEY', 'base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1'},
-        }
-        try:
-            provider = self._model_provider
-            if provider not in model_options:
-                raise ValueError(
-                    f'Unknown model provider <{provider}>. Available providers: {list(model_options.keys())}')
-            llm = ChatOpenAI(
-                base_url=model_options[provider]['base_url'],
-                model=model_options[provider]['model'],
-                api_key=self._get_api_key(model_options[provider]['key_name']),
-                temperature=self._creativity
-            )
-        except Exception as e:
-            self._log_warning(
-                f'LLM initialization failed (provider={self._model_provider}): {e}')
-            return None
-        return llm
-
     def _get_prompts_template(self, lang):
         """Private: Get prompts template for video title and script."""
         try:
@@ -155,3 +119,38 @@ class Generator:
     def _log_warning(self, message):
         """Private: log error message in the same format."""
         print(f'[Warning] {message}')
+
+    # # The following methods have been extracted as a public LLM factory module
+    # def _get_api_key(self, key_name):
+    #     """Private: get model api_key from secrets or env variable."""
+    #     try:
+    #         return st.secrets[key_name]
+    #     except Exception:
+    #         return os.getenv(key_name)
+
+    # def _get_llm(self):
+    #     """Private: Get selected LLM instance."""
+    #     model_options = {
+    #         'OpenAI': {'model': 'gpt-5-mini', 'key_name': 'OPENAI_API_KEY', 'base_url': ''},
+    #         'Kimi': {'model': 'kimi-k2-0905-preview', 'key_name': 'KIMI_API_KEY', 'base_url': 'https://api.moonshot.cn/v1'},
+    #         'DeepSeek': {'model': 'deepseek-chat', 'key_name': 'DEEPSEEK_API_KEY', 'base_url': 'https://api.deepseek.com/v1'},
+    #         'Qwen': {'model': 'qwen-plus', 'key_name': 'QWEN_API_KEY', 'base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1'},
+    #     }
+    #     try:
+    #         provider = self._model_provider
+    #         if provider not in model_options:
+    #             raise ValueError(
+    #                 f'Unknown model provider <{provider}>. Available providers: {list(model_options.keys())}')
+    #         else:
+    #             selected_model = model_options[provider]
+    #         llm = ChatOpenAI(
+    #             base_url=selected_model['base_url'],
+    #             model=selected_model['model'],
+    #             api_key=self._get_api_key(selected_model['key_name']),
+    #             temperature=self._creativity
+    #         )
+    #     except Exception as e:
+    #         self._log_warning(
+    #             f'LLM initialization failed (provider={self._model_provider}): {e}')
+    #         return None
+    #     return llm

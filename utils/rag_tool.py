@@ -1,4 +1,5 @@
-from langchain_openai import ChatOpenAI
+""" This module provides functions to embedding uploaded file into vectorstore, and response based on it."""
+
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, FewShotChatMessagePromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, Docx2txtLoader
@@ -8,6 +9,7 @@ from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_huggingface import HuggingFaceEmbeddings
 import os
 import tempfile
+from utils.llm_factory import get_llm
 
 # 禁止 Hugging Face 的 tokenizers 库并行 warning
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
@@ -27,7 +29,7 @@ def _get_session_history(session_id: str) -> InMemoryChatMessageHistory:
 
 
 def _init_vectorstore(uploaded_file):
-    """初始化向量数据库（只执行一次，除非新上传文件）"""
+    """初始化向量数据库（只执行一次，除非上传新文件）"""
     global _vectorstore, _retriever, _file_name
     if _vectorstore is not None and _retriever is not None and _file_name == uploaded_file.name:
         return _vectorstore, _retriever
@@ -74,20 +76,16 @@ def _init_vectorstore(uploaded_file):
     return _vectorstore, _retriever
 
 
-def get_rag_response(question: str, uploaded_file, session_id: str = 'user1') -> str:
-    """基于 PDF 文档 + RAG 的对话问答，支持多轮聊天记忆"""
+def get_rag_response(model_provider, question, uploaded_file, session_id='user1') -> str:
+    """基于文档 + RAG 的对话问答，支持多轮聊天记忆"""
 
     # 初始化向量数据库（只在第一次调用时执行）
     _, retriever = _init_vectorstore(uploaded_file)
 
     # 初始化 LLM
-    llm = ChatOpenAI(
-        model='deepseek-chat',
-        base_url='https://api.deepseek.com/v1',
-        api_key=os.getenv('DEEPSEEK_API_KEY')
-    )
+    llm = get_llm(model_provider)
 
-    # Prompt 模板 = few shot chat prompt template + chat prompt template
+    # Prompt 模板 = few shot template + chat prompt template
     example_prompt = ChatPromptTemplate.from_messages([
         ('human', '{question}'),
         ('ai', '{answer}')
@@ -104,7 +102,8 @@ def get_rag_response(question: str, uploaded_file, session_id: str = 'user1') ->
         }
     ]
     few_shot_chat_prompt = FewShotChatMessagePromptTemplate(
-        example_prompt=example_prompt, examples=examples
+        example_prompt=example_prompt,
+        examples=examples
     )
 
     prompt = ChatPromptTemplate.from_messages([

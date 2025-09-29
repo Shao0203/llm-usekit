@@ -5,7 +5,7 @@ from utils.sidebar import render_sidebar
 
 lang, txt, model_provider = render_sidebar()
 
-if 'sid' not in st.session_state:
+if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
 
 st.title(txt['qa_title'])
@@ -21,7 +21,7 @@ submit = right.button(txt['submit_question'],
 
 if submit and uploaded_file and question:
     with st.spinner(txt['loading']):
-        response = get_rag_response(question, uploaded_file)
+        response = get_rag_response(model_provider, question, uploaded_file)
     st.write(txt['qa_answer'])
     st.write(response)
     st.session_state.chat_history.append(question)

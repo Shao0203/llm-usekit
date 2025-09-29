@@ -1,8 +1,9 @@
-from langchain_openai import ChatOpenAI
+""" This module provides functions to chat with user and response based on chat history"""
+
 from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-import os
+from utils.llm_factory import get_llm
 
 
 # 用一个 dict 存储不同 session 的对话历史（放在函数外）
@@ -19,14 +20,10 @@ def _get_session_history(session_id: str) -> InMemoryChatMessageHistory:
     return _store[session_id]
 
 
-def get_chat_response_stream(prompt_text, session_id='user1'):
+def get_chat_response_stream(model_provider, prompt_text, session_id='user1'):
     """根据历史聊天记录做出回答"""
     # 初始化 LLM
-    llm = ChatOpenAI(
-        model='deepseek-chat',
-        base_url='https://api.deepseek.com/v1',
-        api_key=os.getenv('DEEPSEEK_API_KEY')
-    )
+    llm = get_llm(model_provider)
 
     # 创建模版：把RunnableWithMessageHistory里history 插进 prompt（MessagesPlaceholder）
     prompt = ChatPromptTemplate([
