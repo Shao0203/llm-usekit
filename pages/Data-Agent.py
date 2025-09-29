@@ -55,4 +55,4 @@ if submit and uploaded_csv and query:
     with st.expander(txt['ai_res_data']):
         st.write(response_dict)
 
-print(st.session_state)
+# print(st.session_state)

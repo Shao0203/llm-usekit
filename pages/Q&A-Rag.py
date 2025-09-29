@@ -34,4 +34,4 @@ if st.session_state.chat_history:
             st.write(st.session_state.chat_history[i+1])
             st.divider()
 
-print(st.session_state)
+# print(st.session_state)

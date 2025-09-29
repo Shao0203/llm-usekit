@@ -48,4 +48,4 @@ if prompt_text:
     # st.session_state.messages.append({'role': 'ai', 'content': response})
     # st.chat_message('ai').write(response)
 
-print(st.session_state)
+# print(st.session_state)

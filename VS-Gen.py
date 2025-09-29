@@ -60,4 +60,4 @@ if submit:
     with st.expander(txt['wiki_label']):
         st.info(wiki_search)
 
-print(st.session_state)
+# print(st.session_state)
