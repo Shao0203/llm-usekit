@@ -31,6 +31,11 @@ def render_sidebar():
                 st.session_state.model_provider),
         )
 
+        # OpenAI blocked China
+        if model_provider == 'OpenAI':
+            st.error(txt['openai_unavailable'])
+            model_provider = 'DeepSeek'
+
         # Set session_state values for lang and model to share among pages
         if lang:
             st.session_state.lang = lang

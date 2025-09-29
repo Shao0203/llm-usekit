@@ -38,6 +38,7 @@
         "original_data": "原始数据",
         "agent_question_hint": "输入问题，如分析/提取数据，或可视化要求（支持条形图、折线图、散点图）",
         "ai_res_data": "后台生成的响应数据",
+        "openai_unavailable": "OpenAI API 目前不支持中国区",
         "prompt_title_string": "请为<{subject}>主题的视频想一个吸引人的标题，回答使用语种{lang}",
         "prompt_script_string": "你是一位短视频博主。根据以下标题和相关信息，写一个视频脚本，回答使用语种{lang}。视频标题：{title}，视频时长：{duration}分钟，生成的脚本的长度尽量遵循视频时长的要求。要求开头抓住眼球，中间提供干货内容，结尾有惊喜。整体内容的表达方式要尽量轻松有趣，吸引年轻人。脚本格式按照【开头】【中间】【结尾】分隔。脚本内容可以结合以下维基百科搜索出的信息，但仅作为参考，只结合相关内容即可，不相关的忽略：\n```{wikipedia_search}```\n并且，如果用户上传了相关信息，也可作为参考。如无信息请忽略：\n```{reference_prompt}```"
     },
@@ -80,6 +81,7 @@
         "original_data": "Original Data",
         "agent_question_hint": "Ask a question, such as analyzing/extracting data, or visualization requirements (supporting bar chart, line chart, and scatter plots)",
         "ai_res_data": "AI response data",
+        "openai_unavailable": "OpenAI API is unavailable in China",
         "prompt_title_string": "Please come up with an attractive title for the video on the <{subject}> topic and answer in {lang}",
         "prompt_script_string": "You are a short-video blogger. Based on the following title and relevant information, write a video script and answer in {lang}. Video title: {title}, Video duration: {duration} minutes. The length of the generated script should follow the requirements of the video duration as much as possible. The opening should be eye-catching, the middle should provide valuable content, and the ending should have a pleasant surprise. The overall content should be expressed in a light and interesting way to attract young people. The script format is separated by [Opening], [Body], and [Ending]. The script content can be combined with the following information searched from wikipedia, but it is only for reference. Only the relevant content should be combined, and the irrelevant ones should be ignored: \n```{wikipedia_search}```\nAlso, if the user uploads relevant information, it can also be used as a reference. If there is no information, please ignore:\n```{reference_prompt}```"
     }
