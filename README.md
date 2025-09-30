@@ -44,7 +44,7 @@ llm-usekit/
    cd llm-usekit               # 进入项目目录
    python -m venv .venv        # 创建虚拟环境
    source .venv/bin/activate   # Mac/Linux
-   .\env\Scripts\activate      # Windows
+   .\.venv\Scripts\activate      # Windows
 
    pip install -r requirements.txt
    ```
@@ -68,7 +68,7 @@ llm-usekit/
 
 
 ## ▶️ 运行项目
-启动主页面 - 视频脚本生成器 (所有子页面随之一并启动)：  
+启动主页面 - 视频脚本生成器 (子页面会随之启动)：  
 ```bash
 streamlit run VS-Gen.py  
 ```
@@ -107,6 +107,121 @@ streamlit run VS-Gen.py
 
 ## 💡 致谢
 本项目基于以下优秀项目与框架构建：  
+- [LangChain](https://www.langchain.com/)
+- [Streamlit](https://streamlit.io/)
+- [OpenAI](https://platform.openai.com/)
+- [DeepSeek](https://www.deepseek.com/)
+- [Kimi](https://platform.moonshot.cn/docs/)
+- [Qwen](https://www.tongyi.com/)
+
+---
+
+## 🚀 Project Overview
+`llm-usekit` is a **multi-purpose LLM (Large Language Model) toolkit** built with **LangChain + Streamlit + multiple LLM APIs (OpenAI, DeepSeek, Kimi, Qwen, etc.).** It provides several ready-to-use applications, including:
+
+- 🎬 **Video Script Generator** —— Provide a topic to generate video script  
+- 💬 **Chat-Bot with memory** —— Chat with AI and ask questions  
+- 📑 **Document Q&A (RAG)** —— Upload documents and ask questions powered by vector search  
+- 📊 **Data Analysis Agent** —— Upload CSV files for automatic data analysis & visualization  
+
+
+## 📂 Project Structure
+```bash
+llm-usekit/  
+├── utils/                 # Backend logic & utilities 
+│ ├── vsgen.py             # Video Script Generator logic  
+│ ├── chat.py              # Chat-Bot logic  
+│ ├── rag_tool.py          # RAG (Document Q&A) logic   
+│ ├── agent_tool.py        # Data Analysis Agent logic  
+│ ├── sidebar.py           # Shared sidebar (language switch & model selection)  
+│ └── llm_factory.py       # Unified LLM factory  
+│  
+├── pages/                 # Streamlit multipage frontend  
+│ ├── Chat-Bot.py          # Chat-Bot page  
+│ ├── Q&A-Rag.py           # Document Q&A page  
+│ └── Data-Agent.py        # Data Analysis Agent page  
+│  
+├── VS-Gen.py              # Main entry page (Video Script Generator)  
+├── texts.json             # Multi-language text configuration  
+├── requirements.txt       # Dependencies  
+└── README.md              # Project documentation  
+```
+
+
+## ⚙️ Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Shao0203/llm-usekit.git
+   ```
+2. Create a virtual environment and install dependencies:  
+   ```bash
+   cd llm-usekit               # Enter project folder
+   python -m venv .venv        # Create virtual environment
+   source .venv/bin/activate   # Mac/Linux
+   .\.venv\Scripts\activate      # Windows
+
+   pip install -r requirements.txt
+   ```
+3. Configure API Keys:  
+   For local development, create a .env file in the project root: 
+   ```bash
+   # .env file 
+   OPENAI_API_KEY = "your_openai_key"
+   DEEPSEEK_API_KEY = "your_deepseek_key"
+   KIMI_API_KEY = "your_kimi_key"
+   QWEN_API_KEY = "your_qwen_key"
+   ```
+   Or set them in your system environment variables (e.g., .zshrc):
+   ```bash
+   # ~/.zshrc
+   export OPENAI_API_KEY = "your_openai_key"
+   export DEEPSEEK_API_KEY = "your_deepseek_key"
+   export KIMI_API_KEY = "your_kimi_key"
+   export QWEN_API_KEY = "your_qwen_key"
+   ```
+
+
+## ▶️ Run the Project
+Launch the main app (Video Script Generator, with all sub-pages included):  
+```bash
+streamlit run VS-Gen.py  
+```
+- The browser will automatically open：`http://localhost:8501`  
+- Use the left sidebar to navigate to Chat-Bot / Q&A-Rag / Data-Agent.
+
+
+## 📌 Features
+1. 🎬 VS-Gen  
+   Generate a video script by entering a topic;  
+   Supports multiple LLMs (OpenAI / DeepSeek / Kimi / Qwen).  
+2. 🤖 Chat-Bot  
+   Multi-turn conversations with memory (similar to ChatGPT / DeepSeek);  
+   Powered by RunnableWithMessageHistory + InMemoryChatMessageHistory.  
+3. 📄 Q&A-RAG  
+   Upload a document → vector storage → ask questions;  
+   Retrieval-Augmented Generation ensures accurate, context-based answers.  
+4. 📊 Data-Agent  
+   Upload a CSV → request analysis or plots → get results automatically;  
+   Built on LangChain Agent + Pandas.  
+
+
+## ✨ Highlights
+- **🔄 Multi-language support** (Chinese / English / easily extendable)  
+- **🧩 Modular design** (independent tools, unified integration, frontend-backend separation)  
+- **🔌 Multi-LLM support** (OpenAI / DeepSeek / Kimi / Qwen, selectable in sidebar; easily extensible)  
+- **💾 Conversation memory** (Chat-Bot supports persistent chat history)  
+- **📚 RAG Q&A** supports TXT / PDF / DOCX uploads with vector-based retrieval)  
+- **📊 Data Analysis Agent** (CSV upload with auto-generated insights & visualizations)  
+
+
+## 📜 License
+This project is licensed under the MIT License.  
+You are free to use, modify, and distribute it, but please retain the original license notice.  
+
+
+## 💡 Acknowledgements
+This project is powered by the following excellent tools and frameworks:  
 - [LangChain](https://www.langchain.com/)
 - [Streamlit](https://streamlit.io/)
 - [OpenAI](https://platform.openai.com/)
